@@ -1,5 +1,8 @@
 package db;
 
+import app.App;
+import app.Controller;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,6 +15,7 @@ public class DBConnector {
     private static String PASS;
     private static Connection connection = null;
     private static Statement statement;
+    private static final Controller controller = App.getController();
 
     private static FileReader FR;
 
@@ -22,7 +26,7 @@ public class DBConnector {
             FR = new FileReader(file);
             properties.load(FR);
         } catch (IOException e) {
-            System.err.println("Failed to read properties");
+            controller.log("Failed to read properties");
         }
         DB_URL = properties.getProperty("url");
         USER = properties.getProperty("user");
@@ -33,31 +37,33 @@ public class DBConnector {
         loadProperties();
         try {
             Class.forName("org.postgresql.Driver");
-            System.out.println("PostgreSQL JDBC Driver successfully connected");
+            controller.log("DB driver successfully connected");
         } catch (ClassNotFoundException e) {
-            System.err.println("PostgreSQL JDBC Driver is not found.");
+            controller.log("DB driver is not found");
             return;
         }
 
         try {
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
         } catch (SQLException e) {
-            System.err.println("Connection Failed");
+            controller.log("Connection to database failed");
             return;
         }
 
         if (connection != null) {
-            System.out.println("You successfully connected to database now");
+            controller.log("Successfully connected to database");
         } else {
-            System.err.println("Failed to make connection to database");
+            controller.log("Failed to make connection to database");
         }
     }
 
     public void setStatement() {
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException e) {
-            System.err.println("Failed to create statement");
+        if (connection != null) {
+            try {
+                statement = connection.createStatement();
+            } catch (SQLException e) {
+                controller.log("Failed to create statement");
+            }
         }
     }
 
@@ -65,7 +71,7 @@ public class DBConnector {
         try {
             statement.executeUpdate(sqlCommand);
         } catch (SQLException e) {
-            System.err.println("Failed to execute sql command");
+            controller.log("Failed to execute sql command");
         }
     }
 
@@ -75,7 +81,7 @@ public class DBConnector {
             resultSet = statement.executeQuery(sqlCommand);
             resultSet.next();
         } catch (SQLException e) {
-            System.err.println("Failed to get query");
+            controller.log("Failed to get query");
         }
         return resultSet;
     }
@@ -85,10 +91,10 @@ public class DBConnector {
             try {
                 statement.close();
                 connection.close();
-                System.out.println("Connection closed");
+                controller.log("Connection closed");
                 FR.close();
             } catch (SQLException | IOException e) {
-                System.err.println("Failed to close DBConnector");
+                controller.log("Failed to close DBConnector");
             }
         }
     }

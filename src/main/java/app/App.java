@@ -10,6 +10,7 @@ import java.io.IOException;
 
 public class App extends Application {
     private Stage stage;
+    private static Controller controller;
 
     public static void main(String[] args) {
         launch(args);
@@ -27,7 +28,7 @@ public class App extends Application {
             System.out.println("Failed to read fxml file.");
         }
 
-        loader.getController();
+        controller = loader.getController();
 
         if (pane != null) {
             stage.setScene(new Scene(pane));
@@ -39,8 +40,12 @@ public class App extends Application {
 
     private void setParameters() {
         stage.setTitle("Server");
-        stage.setWidth(200);
-        stage.setHeight(125);
+        stage.setWidth(400);
+        stage.setHeight(400);
         stage.setResizable(false);
+    }
+
+    public static Controller getController() {
+        return controller;
     }
 }

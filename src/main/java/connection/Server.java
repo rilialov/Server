@@ -1,5 +1,7 @@
 package connection;
 
+import app.App;
+import app.Controller;
 import db.DBConnector;
 import db.Fabric;
 import model.Form;
@@ -14,6 +16,7 @@ public class Server extends Thread {
     private static final int port = 5555;
     private static DBConnector dbConnector;
     private static boolean isRunning;
+    private static final Controller controller = App.getController();
 
     public void run() {
         while (!isInterrupted()) {
@@ -22,7 +25,7 @@ public class Server extends Thread {
             dbConnector.setStatement();
 
             try(ServerSocket socket = new ServerSocket(port)) {
-                System.out.println("Server started");
+                controller.log("Server started");
                 isRunning = true;
                 while(isRunning) {
                     Socket client = socket.accept();
@@ -45,6 +48,7 @@ public class Server extends Thread {
         private void serverHandshake(Comm connection) throws IOException, ClassNotFoundException {
             if (connection != null) {
                 connection.send(new Message(MessageType.CONNECTED));
+                controller.log("Client connected");
             }
         }
 
@@ -54,6 +58,7 @@ public class Server extends Thread {
             while (isRunning) {
                 Message message = connection.receive();
                 if (message.getType() == MessageType.FORM_REQUEST) {
+                    controller.log("Form requested");
                     String login = message.getLogin();
                     DBConnector connector = Fabric.getConnector();
                     ResultSet resultSet = connector.getQuery("SELECT * FROM users WHERE login = '" + login + "';");
@@ -78,6 +83,7 @@ public class Server extends Thread {
                             "', phone_ed = '" + array[2] +
                             "', email_ed = '" + array[3] +
                             "' WHERE student_id = " + form.getStudent_id() + ";");
+                    controller.log("Form updated");
                     return;
                 }
             }
