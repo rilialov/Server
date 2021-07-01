@@ -16,11 +16,11 @@ public class DBConnector {
     private static Connection connection = null;
     private static Statement statement;
     private static final Controller controller = App.getController();
-
+    private static final String USER_DIR = System.getProperty("user.dir");
     private static FileReader FR;
 
     private static void loadProperties() {
-        File file = new File("C:\\Java\\db.properties");
+        File file = new File(USER_DIR + "\\db.properties");
         Properties properties = new Properties();
         try {
             FR = new FileReader(file);
