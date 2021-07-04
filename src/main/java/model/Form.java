@@ -1,7 +1,7 @@
 package model;
 
 import db.DBConnector;
-import db.Fabric;
+import db.DB;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +13,7 @@ public class Form {
     private int student_id = 0;
 
     public Form(int form_id) {
-        DBConnector connector = Fabric.getConnector();
+        DBConnector connector = DB.getConnector();
         ResultSet resultSet = connector.getQuery("SELECT * FROM forms WHERE form_id = " + form_id + ";");
 
         if (resultSet != null) {

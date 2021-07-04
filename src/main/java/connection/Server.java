@@ -3,7 +3,7 @@ package connection;
 import app.App;
 import app.Controller;
 import db.DBConnector;
-import db.Fabric;
+import db.DB;
 import model.Form;
 
 import java.io.IOException;
@@ -15,34 +15,69 @@ import java.sql.SQLException;
 public class Server extends Thread {
     private static final int port = 5555;
     private static DBConnector dbConnector;
+    private static Handler handler;
+    private static ServerSocket socket;
     private static boolean isRunning;
     private static final Controller controller = App.getController();
 
-    public void run() {
-        while (!isInterrupted()) {
-            dbConnector = Fabric.getConnector();
-            dbConnector.setConnection();
-            dbConnector.setStatement();
+    public Server() {
+        isRunning = true;
+    }
 
-            try(ServerSocket socket = new ServerSocket(port)) {
-                controller.log("Server started");
-                isRunning = true;
-                while(isRunning) {
-                    Socket client = socket.accept();
-                    Handler handler = new Handler(client);
-                    handler.start();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+    public void run() {
+        dbConnector = DB.getConnector();
+        dbConnector.setConnection();
+        dbConnector.setStatement();
+
+        try {
+            socket = new ServerSocket(port);
+            controller.log("Server started");
+            while(isRunning) {
+                Socket client = socket.accept();
+                handler = new Handler(client);
+                handler.start();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    public void close() {
+        if (handler != null) {
+            handler.disable();
+        }
+        isRunning = false;
+        try {
+            socket.close();
+        } catch (IOException e) {
+            controller.log("Socket interrupted");
+        }
+        dbConnector.close();
     }
 
     private static class Handler extends Thread {
         private final Socket socket;
+        private boolean isActive;
 
         public Handler (Socket socket) throws IOException {
             this.socket = socket;
+            isActive = true;
+        }
+
+        public void run() {
+            try {
+                Comm connection = new Comm(socket);
+                serverHandshake(connection);
+                serverMainLoop(connection);
+                connection.close();
+                controller.log("Client disconnected");
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        void disable() {
+            isActive = false;
         }
 
         private void serverHandshake(Comm connection) throws IOException, ClassNotFoundException {
@@ -55,12 +90,13 @@ public class Server extends Thread {
         private void serverMainLoop(Comm connection) throws IOException, ClassNotFoundException {
             int id = 0;
             Form form = null;
-            while (isRunning) {
+
+            while (isActive) {
                 Message message = connection.receive();
                 if (message.getType() == MessageType.FORM_REQUEST) {
                     controller.log("Form requested");
                     String login = message.getLogin();
-                    DBConnector connector = Fabric.getConnector();
+                    DBConnector connector = DB.getConnector();
                     ResultSet resultSet = connector.getQuery("SELECT * FROM users WHERE login = '" + login + "';");
                     if (resultSet != null) {
                         try {
@@ -86,17 +122,6 @@ public class Server extends Thread {
                     controller.log("Form updated");
                     return;
                 }
-            }
-        }
-
-        public void run() {
-            try {
-                Comm connection = new Comm(socket);
-                serverHandshake(connection);
-                serverMainLoop(connection);
-                connection.close();
-            } catch (IOException | ClassNotFoundException ioException) {
-                ioException.printStackTrace();
             }
         }
     }

@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea;
 
 public class Controller {
     Thread thread;
+    Server server;
 
     @FXML
     TextArea log;
@@ -30,19 +31,19 @@ public class Controller {
 
     @FXML
     private void start() {
-        Server server = new Server();
+        server = new Server();
         thread = new Thread(server);
-        thread.setDaemon(true);
         thread.start();
     }
 
     @FXML
     private void stop() {
-
+        server.close();
+        log.appendText("\n" + "Server stopped");
     }
 
     @FXML
     public void log(String text) {
-        log.appendText(text + "\n");
+        log.appendText("\n" + text);
     }
 }

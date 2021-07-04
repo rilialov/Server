@@ -1,7 +1,7 @@
 package model;
 
 import db.DBConnector;
-import db.Fabric;
+import db.DB;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ public class Trainer {
     private String lastName;
 
     public Trainer(int trainer_id) {
-        DBConnector connector = Fabric.getConnector();
+        DBConnector connector = DB.getConnector();
         ResultSet resultSet = connector.getQuery("SELECT * FROM trainers WHERE trainer_id = " + trainer_id + ";");
 
         if (resultSet != null) {

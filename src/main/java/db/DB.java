@@ -1,9 +1,9 @@
 package db;
 
-public class Fabric {
+public class DB {
     private static final DBConnector connector = new DBConnector();
 
-    public Fabric() {
+    public DB() {
     }
 
     public static DBConnector getConnector() {
