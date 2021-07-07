@@ -8,8 +8,8 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.TextArea;
 
 public class Controller {
-    Thread thread;
-    Server server;
+    private Server server;
+    private boolean isStopped = true;
 
     @FXML
     TextArea log;
@@ -31,15 +31,21 @@ public class Controller {
 
     @FXML
     private void start() {
-        server = new Server();
-        thread = new Thread(server);
-        thread.start();
+        if (isStopped) {
+            isStopped = false;
+            server = new Server();
+            Thread thread = new Thread(server);
+            thread.start();
+        }
     }
 
     @FXML
     private void stop() {
-        server.close();
-        log.appendText("\n" + "Server stopped");
+        if (!isStopped) {
+            isStopped = true;
+            server.close();
+            log.appendText("\n" + "Server stopped");
+        }
     }
 
     @FXML
