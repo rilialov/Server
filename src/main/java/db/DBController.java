@@ -26,7 +26,7 @@ public class DBController {
         return id;
     }
 
-    public int[] getFormData(int form_id) {
+    int[] getFormData(int form_id) {
         int[] ids = new int[3];
         ResultSet resultSet = dbConnector.getQuery("SELECT * FROM forms WHERE form_id = " + form_id + ";");
         if (resultSet != null) {
@@ -41,7 +41,7 @@ public class DBController {
         return ids;
     }
 
-    public String getFormDate(int form_id) {
+    String getFormDate(int form_id) {
         String date = null;
         ResultSet resultSet = dbConnector.getQuery("SELECT * FROM forms WHERE form_id = " + form_id + ";");
         if (resultSet != null) {
@@ -54,7 +54,7 @@ public class DBController {
         return date;
     }
 
-    public String[] getCourseData(int course_id) {
+    String[] getCourseData(int course_id) {
         String[] courseData = new String[2];
         ResultSet resultSet = dbConnector.getQuery("SELECT * FROM courses WHERE course_id = " + course_id + ";");
 
@@ -69,7 +69,7 @@ public class DBController {
         return courseData;
     }
 
-    public String[] getTrainerData(int trainer_id) {
+    String[] getTrainerData(int trainer_id) {
         String[] trainerData = new String[2];
         ResultSet resultSet = dbConnector.getQuery("SELECT * FROM trainers WHERE trainer_id = " + trainer_id + ";");
 
@@ -84,7 +84,7 @@ public class DBController {
         return trainerData;
     }
 
-    public String[] getStudentData(int student_id) {
+    String[] getStudentData(int student_id) {
         String[] studentData = new String[2];
         ResultSet resultSet = dbConnector.getQuery("SELECT * FROM students WHERE student_id = " + student_id + ";");
 

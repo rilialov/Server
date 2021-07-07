@@ -1,7 +1,8 @@
-package connection;
+package app;
 
-import app.App;
-import app.Controller;
+import connection.Comm;
+import connection.Message;
+import connection.MessageType;
 import db.DBController;
 import db.FormBuilder;
 import model.Form;

@@ -1,6 +1,5 @@
 package app;
 
-import connection.Server;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ButtonType;
@@ -12,7 +11,7 @@ public class Controller {
     private boolean isStopped = true;
 
     @FXML
-    TextArea log;
+    private TextArea log;
 
     @FXML
     private void exit() {

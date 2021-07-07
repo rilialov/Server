@@ -33,7 +33,7 @@ public class DBConnector {
         PASS = properties.getProperty("pass");
     }
 
-    public void setConnection() {
+    void setConnection() {
         loadProperties();
         try {
             Class.forName("org.postgresql.Driver");
@@ -57,7 +57,7 @@ public class DBConnector {
         }
     }
 
-    public void setStatement() {
+    void setStatement() {
         if (connection != null) {
             try {
                 statement = connection.createStatement();
@@ -67,7 +67,7 @@ public class DBConnector {
         }
     }
 
-    public void execute(String sqlCommand) {
+    void execute(String sqlCommand) {
         try {
             statement.executeUpdate(sqlCommand);
         } catch (SQLException e) {
@@ -75,7 +75,7 @@ public class DBConnector {
         }
     }
 
-    public ResultSet getQuery(String sqlCommand) {
+    ResultSet getQuery(String sqlCommand) {
         ResultSet resultSet = null;
         try {
             resultSet = statement.executeQuery(sqlCommand);
@@ -86,7 +86,7 @@ public class DBConnector {
         return resultSet;
     }
 
-    public void close() {
+    void close() {
         if (connection != null) {
             try {
                 statement.close();
